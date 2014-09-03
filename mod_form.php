@@ -34,7 +34,7 @@ class mod_learninganalytics_mod_form extends moodleform_mod {
         $mform = $this->_form;
 
         $mform->addElement('header', 'generalhdr', get_string('general'));
-        $this->add_intro_editor(true, get_string('learninganalyticstext', 'learninganalytics'));
+        //$this->add_intro_editor(true, get_string('learninganalyticstext', 'learninganalytics'));
 
         $this->standard_coursemodule_elements();
 
