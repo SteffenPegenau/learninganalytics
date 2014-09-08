@@ -37,5 +37,27 @@ $capabilities = array(
         ),
         'clonepermissionsfrom' => 'moodle/course:manageactivities'
     ),
+	
+	'mod/learninganalytics:teacherView' => array(
+		'riskbitmask' => RISK_PERSONAL,
+		'captype' => 'read',
+		'contextlevel' => CONTEXT_MODULE,
+		'archetypes' => array(
+			'manager' => CAP_ALLOW,
+			'editingteacher' => CAP_ALLOW
+		),
+		'clonepermissionsfrom' => 'moodle/course:manageactivities'
+	),
+	
+	'mod/learninganalytics:studentView' => array(
+		'riskbitmask' => RISK_PERSONAL,
+		'captype' => 'read',
+		'contextlevel' => CONTEXT_MODULE,
+		'archetypes' => array(
+			'manager' => CAP_ALLOW,
+			'student' => CAP_ALLOW
+		),
+		'clonepermissionsfrom' => 'moodle/course:manageactivities'
+	)
 
 );
