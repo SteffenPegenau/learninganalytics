@@ -13,6 +13,7 @@ global $CFG;
 $app = new \Slim\Slim ();
 $app->map ( '/getRoleInCourse/:id', 'getRoleInCourse' )->via ( 'GET');
 $app->map ( '/echoRole/:id', 'echoRole' )->via ( 'GET' );
+$app->map ( '/latestCourseViews/:id', 'latestCourseViews' )->via ( 'GET' );
 $app->run ();
 
 
@@ -40,6 +41,41 @@ function getRoleInCourse($courseID) {
 
 function echoData($data) {
 	echo "<pre>".print_r($data, true)."</pre>";
+}
+
+function latestCourseViews($courseID) {
+	GLOBAL $DB;
+	$sql = "SELECT
+				{log}.id,
+    			{log}.time,
+				{log}.course,
+				{log}.action,
+				{log}.module,
+				{log}.time
+			FROM
+				{log}
+			WHERE
+				{log}.action = 'view' AND
+				{log}.module = 'course' AND
+				{log}.course = $courseID
+			";
+
+	$result = $DB->get_records_sql($sql);
+	$array = array("Result" => "OK", "Records" => $result );
+	
+	$now = new DateTime();
+	$now->format('Y-m-d H:i:s');
+	$nowTimeStamp = $now->getTimestamp();
+	echo "<pre>" . print_r ( $now, true ) . "</pre>";
+	echo "<pre>current date timestamp: " . print_r ( $nowTimeStamp, true ) . "</pre>";
+	
+	$month = $now->date;
+	echo "<pre>" . print_r ( $month, true ) . "</pre>";
+	
+	$sevendaysago = mktime(15,07,50, 09, 08, 2014);
+	echo "<pre>" . print_r ( $sevendaysago, true ) . "</pre>";
+	
+	echo "<pre>" . print_r ( $array, true ) . "</pre>";
 }
 
 ?>
