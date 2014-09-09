@@ -13,7 +13,7 @@ global $CFG;
 $app = new \Slim\Slim ();
 $app->map ( '/getRoleInCourse/:id', 'getRoleInCourse' )->via ( 'GET');
 $app->map ( '/echoRole/:id', 'echoRole' )->via ( 'GET' );
-$app->map ( '/latestCourseViews/:id', 'latestCourseViews' )->via ( 'GET' );
+$app->map ( '/latestCourseViews/:id', 'latestCourseViews' )->via ( 'GET', 'POST' );
 $app->run ();
 
 
@@ -44,38 +44,77 @@ function echoData($data) {
 }
 
 function latestCourseViews($courseID) {
-	GLOBAL $DB;
-	$sql = "SELECT
-				{log}.id,
-    			{log}.time,
-				{log}.course,
-				{log}.action,
-				{log}.module,
-				{log}.time
-			FROM
-				{log}
-			WHERE
-				{log}.action = 'view' AND
-				{log}.module = 'course' AND
-				{log}.course = $courseID
-			";
-
-	$result = $DB->get_records_sql($sql);
-	$array = array("Result" => "OK", "Records" => $result );
+	$app = \Slim\Slim::getInstance ();
+	global $DB;
+	/*
+	$oneDayAgo = strtotime("-1 day");
+	$twoDaysAgo = strtotime("-2 days");
+	$threeDaysAgo = strtotime("-3 days");
+	$fourDaysAgo = strtotime("-4 days");
+	$fiveDaysAgo = strtotime("-5 days");
+	$sixDaysAgo = strtotime("-6 days");
+	$sevenDaysAgo = strtotime("-7 days");
+	$eightDaysAgo = strtotime("-8 days");
+	$today = strtotime("-0 days");
+	*/
 	
+	$array = array();
+	for ($i = 0; $i < 8; $i++) {
+		$temp = $i + 1;
+		$temp2 = strtotime("-$i days");
+		//echo "<pre>temp2: " . print_r ( $temp2, true ) . "</pre>";
+		$temp3 = strtotime("-$temp days");
+		//echo "<pre>temp3: " . print_r ( $temp3, true ) . "</pre>";
+		$sql = "SELECT
+					{log}.id,
+    				{log}.time,
+					{log}.course,
+					{log}.action,
+					{log}.module,
+					{log}.userid,
+				COUNT(*) AS 'How often did this user view the course:'
+				FROM
+					{log}
+				WHERE
+					{log}.action = 'view' AND
+					{log}.module = 'course' AND
+					{log}.course = $courseID AND
+					{log}.time <= $temp2 AND
+					{log}.time >= $temp3
+				GROUP BY {log}.userid
+				";
+		$result = $DB->get_records_sql($sql);
+		//echo "<pre>" . print_r ( $result, true ) . "</pre>";
+		$countobjectsinresult = sizeof($result);
+		//echo "<pre>" . print_r ( $result, true ) . "</pre>";
+		$subarray = array("Records" => $countobjectsinresult);
+		//array_push($array, $countobjectsinresult);
+		$array[$i] = $countobjectsinresult;
+		//array_push($array, $subarray);
+	};
+	
+	/*
 	$now = new DateTime();
 	$now->format('Y-m-d H:i:s');
 	$nowTimeStamp = $now->getTimestamp();
 	echo "<pre>" . print_r ( $now, true ) . "</pre>";
 	echo "<pre>current date timestamp: " . print_r ( $nowTimeStamp, true ) . "</pre>";
-	
 	$month = $now->date;
-	echo "<pre>" . print_r ( $month, true ) . "</pre>";
+	echo "<pre>current date: " . print_r ( $month, true ) . "</pre>";
+	echo "<pre>timestamp one week ago: " . $sevenDaysAgo . "</pre>";
+	echo "<pre>timestamp six days ago: " . $sixDaysAgo . "</pre>";
+	echo "<pre>timestamp five days ago: " . $fiveDaysAgo . "</pre>";
+	echo "<pre>timestamp four days ago: " . $fourDaysAgo . "</pre>";
+	echo "<pre>timestamp three days ago: " . $threeDaysAgo . "</pre>";
+	echo "<pre>timestamp two days ago: " . $twoDaysAgo . "</pre>";
+	echo "<pre>timestamp yesterday: " . $oneDayAgo . "</pre>";
+	echo "<pre>timestamp today: " . $today . "</pre>";
+	*/
 	
-	$sevendaysago = mktime(15,07,50, 09, 08, 2014);
-	echo "<pre>" . print_r ( $sevendaysago, true ) . "</pre>";
 	
-	echo "<pre>" . print_r ( $array, true ) . "</pre>";
+	//return $array;
+	//echo "<pre>" . print_r ( $array, true ) . "</pre>";
+	echo json_encode( $array);
 }
 
 ?>
