@@ -14,6 +14,7 @@ $app = new \Slim\Slim ();
 $app->map ( '/getRoleInCourse/:id', 'getRoleInCourse' )->via ( 'GET');
 $app->map ( '/echoRole/:id', 'echoRole' )->via ( 'GET' );
 $app->map ( '/latestCourseViews/:id', 'latestCourseViews' )->via ( 'GET', 'POST' );
+$app->map ( '/latestActivityViews/:id', 'latestActivityViews' )->via ( 'GET', 'POST');
 $app->run ();
 
 
@@ -58,6 +59,17 @@ function latestCourseViews($courseID) {
 	$today = strtotime("-0 days");
 	*/
 	
+	$students = getPersonsInCourse("Studierende", $courseID);
+	$temparray = array();
+	
+	foreach ($students as $value) {
+		//echo "<pre>" . print_r ( $value->userid, true ) . "</pre>";
+		array_push($temparray, $value->userid);
+	};
+	//echo "<pre>" . print_r ( $temparray, true ) . "</pre>";
+		
+	//echo "<pre>" . print_r ( $students, true ) . "</pre>";
+	
 	$array = array();
 	for ($i = 0; $i < 8; $i++) {
 		$temp = $i + 1;
@@ -76,6 +88,7 @@ function latestCourseViews($courseID) {
 				FROM
 					{log}
 				WHERE
+					{log}.userid IN (".implode(',',$temparray).") AND
 					{log}.action = 'view' AND
 					{log}.module = 'course' AND
 					{log}.course = $courseID AND
@@ -87,11 +100,11 @@ function latestCourseViews($courseID) {
 		//echo "<pre>" . print_r ( $result, true ) . "</pre>";
 		$countobjectsinresult = sizeof($result);
 		//echo "<pre>" . print_r ( $result, true ) . "</pre>";
-		$subarray = array("Records" => $countobjectsinresult);
+		//$subarray = array("Records" => $countobjectsinresult);
 		//array_push($array, $countobjectsinresult);
 		$array[$i] = $countobjectsinresult;
 		//array_push($array, $subarray);
-	};
+	}; // Ende der for-Schleife
 	
 	/*
 	$now = new DateTime();
@@ -114,7 +127,95 @@ function latestCourseViews($courseID) {
 	
 	//return $array;
 	//echo "<pre>" . print_r ( $array, true ) . "</pre>";
-	echo json_encode( $array);
+	
+	array_push($array, sizeof($students));
+	
+	//echo "<pre>" . print_r ( sizeof($students), true ) . "</pre>";
+	echo json_encode( $array );
+}
+
+
+function latestAssignmentViews($courseID) {
+	$app = \Slim\Slim::getInstance ();
+	global $DB;
+
+	$students = getPersonsInCourse("Studierende", $courseID);
+	$temparray = array();
+
+	foreach ($students as $value) {
+		//echo "<pre>" . print_r ( $value->userid, true ) . "</pre>";
+		array_push($temparray, $value->userid);
+	};
+	//echo "<pre>" . print_r ( $temparray, true ) . "</pre>";
+	//echo "<pre>" . print_r ( $students, true ) . "</pre>";
+
+	$array = array();
+	for ($i = 0; $i < 8; $i++) {
+		$temp = $i + 1;
+		$temp2 = strtotime("-$i days");
+		$temp3 = strtotime("-$temp days");
+		$sql = "SELECT
+					{log}.id,
+    				{log}.time,
+					{log}.course,
+					{log}.action,
+					{log}.module,
+					{log}.userid,
+				COUNT(*) AS 'How often did this user view this activity:'
+				FROM
+					{log}
+				WHERE
+					{log}.userid IN (".implode(',',$temparray).") AND
+					{log}.action = 'view' AND
+					{log}.module = 'assign' AND
+					{log}.course = $courseID AND
+					{log}.time <= $temp2 AND
+					{log}.time >= $temp3 
+					GROUP BY {log}.userid
+					";
+					$result = $DB->get_records_sql($sql);
+					//echo "<pre>" . print_r ( $result, true ) . "</pre>";
+					$countobjectsinresult = sizeof($result);
+					//echo "<pre>" . print_r ( $result, true ) . "</pre>";
+					//$subarray = array("Records" => $countobjectsinresult);
+					//array_push($array, $countobjectsinresult);
+					$array[$i] = $countobjectsinresult;
+					//array_push($array, $subarray);
+	}; // Ende der for-Schleife
+
+
+	//return $array;
+	//echo "<pre>" . print_r ( $array, true ) . "</pre>";
+
+	array_push($array, sizeof($students));
+
+	//echo "<pre>" . print_r ( sizeof($students), true ) . "</pre>";
+	echo json_encode( $array );
+}
+
+
+function getPersonsInCourse($role, $course) {
+	global $DB;
+	$sql = "SELECT
+				{role_assignments}.id,
+				{role_assignments}.roleid,
+				{role_assignments}.userid,
+
+				{context}.instanceid as course,
+
+				{role}.archetype,
+
+				{user}.firstname,
+				{user}.lastname
+			FROM
+				{role_assignments}, {context}, {role}, {user}
+			WHERE
+				{role_assignments}.contextid = {context}.id AND
+				{context}.instanceid = ".$course." AND
+				{role}.id = {role_assignments}.roleid AND
+				{user}.id = {role_assignments}.userid AND
+				{role}.name LIKE '".$role."'";
+	return $DB->get_records_sql($sql);
 }
 
 ?>

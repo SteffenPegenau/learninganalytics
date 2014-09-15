@@ -1,7 +1,29 @@
-<script src="/mod/learninganalytics/js/jquery-2.1.1.min.js"></script>
-<script src="/mod/learninganalytics/js/main.js"></script>
-<script type="text/javascript" src='https://www.google.com/jsapi?autoload={"modules":[{"name":"visualization","version":"1","packages":["table", "corechart", "controls"]}]}'></script>
-
-<div id="learningAnalyticsDIV"></div>
-
-<script>DrawGUI("learningAnalyticsDIV");</script>
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="/mod/learninganalytics/js/jquery-2.1.1.min.js"></script>
+		<script type="text/javascript" src='https://www.google.com/jsapi?autoload={"modules":[{"name":"visualization","version":"1","packages":["table", "corechart", "controls"]}]}'></script>
+		<script src="/mod/learninganalytics/js/main2.js"></script>
+	</head>
+	
+	<body>
+		<div class="row">
+			<div class="col-md-6">
+				<div id="learningAnalyticsDIV">
+					<div class="panel panel-default">
+			           	<div class="panel-heading">
+			           		<h3 class="panel-title"></h3>
+			           			<div class="row">
+    								<div class="col-md-12" id="filter_div"></div>
+    							</div>
+    						</div>
+    					<div class="panel-body" id="stacked_chart_div"></div>
+    				</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div></div>
+			</div>
+	    </div>
+	</body>
+</html>
