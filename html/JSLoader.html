@@ -4,25 +4,22 @@
 		<script src="/mod/learninganalytics/js/jquery-2.1.1.min.js"></script>
 		<script type="text/javascript" src='https://www.google.com/jsapi?autoload={"modules":[{"name":"visualization","version":"1","packages":["table", "corechart", "controls"]}]}'></script>
 		<script src="/mod/learninganalytics/js/main2.js"></script>
+		<script src="/mod/learninganalytics/js/main3.js"></script>
 	</head>
 	
 	<body>
 		<div class="row">
 			<div class="col-md-6">
 				<div id="learningAnalyticsDIV">
-					<div class="panel panel-default">
-			           	<div class="panel-heading">
-			           		<h3 class="panel-title"></h3>
-			           			<div class="row">
-    								<div class="col-md-12" id="filter_div"></div>
-    							</div>
-    						</div>
-    					<div class="panel-body" id="stacked_chart_div"></div>
-    				</div>
-				</div>
+					<div id="filter_div"></div>
+    				<div id="stacked_chart_div"></div>
+    			</div>
 			</div>
 			<div class="col-md-6">
-				<div></div>
+				<div id="learningAnalyticsDIV2">
+    				<div id="column_filter_div"></div>
+    				<div id="column_chart_div"></div>
+				</div>
 			</div>
 	    </div>
 	</body>

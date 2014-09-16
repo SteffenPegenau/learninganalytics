@@ -7,7 +7,7 @@
  */
 function DrawChart(div) {
 	$.ajax({
-		url: "/mod/learninganalytics/rest/rest.php/latestCourseViews/3",
+		url: "/mod/learninganalytics/rest/rest.php/latestCourseViews/5",
 		dataType: 'json',
 		context : document.body
 	}).done(function (result) {

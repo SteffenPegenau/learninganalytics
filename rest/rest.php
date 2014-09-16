@@ -14,7 +14,8 @@ $app = new \Slim\Slim ();
 $app->map ( '/getRoleInCourse/:id', 'getRoleInCourse' )->via ( 'GET');
 $app->map ( '/echoRole/:id', 'echoRole' )->via ( 'GET' );
 $app->map ( '/latestCourseViews/:id', 'latestCourseViews' )->via ( 'GET', 'POST' );
-$app->map ( '/latestActivityViews/:id', 'latestActivityViews' )->via ( 'GET', 'POST');
+$app->map ( '/latestAssignmentViews/:id', 'latestAssignmentViews' )->via ( 'GET', 'POST');
+$app->map ( '/latestForumPosts/:id', 'latestForumPosts' )->via ( 'GET', 'POST' );
 $app->run ();
 
 
@@ -181,7 +182,7 @@ function latestAssignmentViews($courseID) {
 					//array_push($array, $countobjectsinresult);
 					$array[$i] = $countobjectsinresult;
 					//array_push($array, $subarray);
-	}; // Ende der for-Schleife
+	}; //Ende der for-Schleife
 
 
 	//return $array;
@@ -195,6 +196,7 @@ function latestAssignmentViews($courseID) {
 
 
 function getPersonsInCourse($role, $course) {
+	$app = \Slim\Slim::getInstance ();
 	global $DB;
 	$sql = "SELECT
 				{role_assignments}.id,
@@ -218,4 +220,49 @@ function getPersonsInCourse($role, $course) {
 	return $DB->get_records_sql($sql);
 }
 
+
+function latestForumPosts($courseID) {
+	global $DB;
+	
+	$array = array();
+	
+	for ($i = 0; $i < 8; $i++) {
+		$temp = $i + 1;
+		$temp2 = strtotime("-$i days");
+		$temp3 = strtotime("-$temp days");
+		$sql = "SELECT
+					{log}.info,
+					COUNT(*) AS 'totalnewposts'	
+				FROM
+					{log}
+				WHERE
+					{log}.module = 'forum' AND
+					{log}.action = 'add discussion' AND
+					{log}.course = $courseID AND
+					{log}.time <= $temp2 AND
+					{log}.time >= $temp3
+				OR
+					{log}.module = 'forum' AND
+					{log}.action = 'add post' AND
+					{log}.course = $courseID AND
+					{log}.time <= $temp2 AND
+					{log}.time >= $temp3
+				";
+		
+		$result = $DB->get_records_sql($sql);
+		
+		$x = 0; // Zählvariable, um die aktuelle Iteration und damit Position zu bestimmen
+		foreach ($result as $val) {
+			if ($x===0) {
+				break; // Schleife beenden, wenn gewünschte Position erreicht wurde
+			}
+			$x++;
+		}
+		// $val aus der Schleife bleibt erhalten.
+		array_push($array, intval($val->totalnewposts));
+	}; //Ende der for-Schleife
+	
+	//echo "<pre>" . print_r ( $array, true ) . "</pre>";
+	echo json_encode($array);
+}
 ?>
