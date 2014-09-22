@@ -28,17 +28,17 @@ function echoRole($courseID) {
 }
 
 function getRoleInCourse($courseID) {
-	global $USER;
-	echo $USER->id . ": " . $USER->firstname . " " . $USER->lastname . "<br />";
-	$context = context_course::instance($courseID);
-	if ($roles = get_user_roles($context, $USER->id)) {
-		foreach ($roles as $role) {
-			echo $role->roleid.' => '.$role->name.'<br />';
-			// Die erste der Rollen ist die maechtigste => Abbruch
-			return;
-		}
+	$role = "";
+	if(has_capability('mod/learninganalytics:studentview', context_course::instance($courseID))) {
+		$role = "student";
 	}
-	
+	if(has_capability('mod/learninganalytics:teacherview', context_course::instance($courseID))) {
+		$role = "teacher";
+	}
+	if(empty($role)) {
+		die;
+	}
+	echo $role;
 }
 
 function echoData($data) {
