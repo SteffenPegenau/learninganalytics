@@ -30,7 +30,7 @@ The original location of this file is C:/Users/bs42cavo/uml-generated-code/obser
 **************************************************************************/
 
 require_once 'iface_mod.php';
-
+require_once '../../../config.php';
 
 /**
  * class observer
@@ -38,30 +38,10 @@ require_once 'iface_mod.php';
  */
 class observer
 {
-
-		/** Aggregations: */
-
-		/** Compositions: */
-
-		 /*** Attributes: ***/
-
-		/**
-		 * 
-		 * @access public
-		 */
 		public $course;
-
-		/**
-		 * 
-		 * @access public
-		 */
 		public $startDate;
-
-		/**
-		 * 
-		 * @access public
-		 */
 		public $endDate;
+		private $modulesInCourse = array();
 
 
 		/**
@@ -70,22 +50,41 @@ class observer
 		 * -Legt für jeden Modul-Typ ein Objekt an und verwaltet die Objekte in Array
 		 *
 		 * @param int course 
-
-		 * @param string startDate dd-mm-yy
-strtotime()
-
-
+		 * @param string startDate dd-mm-yy strtotime()
 		 * @param string endDate 
-
 		 * @return void
 		 * @access public
 		 */
 		public function __construct( $course,  $startDate,  $endDate ) {
-		} // end of member function __construct
-
-
-
-
+			GLOBAL $DB;
+			$this->course = $course;
+			$this->startDate = $startDate;
+			$this->endDate = $endDate + 24*60*60 - 1;
+			$SQL = "SELECT component FROM {logstore_standard_log} WHERE component LIKE 'mod%' AND timecreated >= ".$this->startDate." AND timecreated <= ".$this->endDate." GROUP BY component";
+			$modules = $DB->get_records_sql($SQL);
+			//echo "<pre>".print_r($result, true)."</pre>";
+			foreach($modules as $module => $value) {
+				require_once $module.'.php';
+				$this->modulesInCourse[] = new $module();
+			}
+			//echo "<pre>".print_r($this->modulesInCourse, true)."</pre>";
+		}
+		
+		public function collectUniqueViews() {
+			$result = array();
+			foreach ($this->modulesInCourse as $index => $module) {
+				//echo "<pre>".print_r($module, true)."</pre>";
+				$count = $module->getUniqueViews($this->course, $this->startDate, $this->endDate);
+				if($count > 0) {
+					$result[$module->getClassName()] = $count;
+				}
+			}
+			echo "<pre>".print_r($result, true)."</pre>";
+		}
 
 } // end of observer
+
+$observer = new observer(40, time()-7*24*60*60, time());
+$observer->collectUniqueViews();
+
 ?>

@@ -29,13 +29,13 @@ This file was generated on Di Sep 23 2014 at 14:08:46
 The original location of this file is C:/Users/bs42cavo/uml-generated-code/mod_choicegroup.php
 **************************************************************************/
 
-
+require_once 'mod.php';
 
 /**
  * class mod_choicegroup
  * 
  */
-class mod_choicegroup
+class mod_choicegroup extends mod
 {
 
 		/** Aggregations: */

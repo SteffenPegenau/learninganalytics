@@ -36,7 +36,7 @@ require_once 'mod.php';
  * class mod_forum
  * 
  */
-class mod_forum
+class mod_forum extends mod
 {
 
 		/** Aggregations: */

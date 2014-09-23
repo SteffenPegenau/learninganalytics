@@ -31,6 +31,7 @@ The original location of this file is C:/Users/bs42cavo/uml-generated-code/mod.p
 
 require_once 'mod.php';
 require_once 'iface_mod.php';
+require_once '../../../config.php';
 
 
 /**
@@ -51,20 +52,33 @@ class mod
 		 * 
 		 *
 		 * @param int course 
-
 		 * @param long startDate 
-
 		 * @param long endDate 
-
-		 * @return void
+		 * @return int
 		 * @access public
 		 */
 		public function getUniqueViews( $course,  $startDate,  $endDate ) {
+			GLOBAL $DB;
+			$sql = "SELECT
+						userid
+				FROM
+					{logstore_standard_log}
+				WHERE
+					action = 'viewed' AND
+					component = '".get_called_class()."' AND
+					courseid = ".$course." AND
+					timecreated >= ".$startDate." AND
+					timecreated <= ".$endDate."
+				GROUP BY userid
+				";
+			
+			$result = $DB->get_records_sql($sql);
+			//echo $sql."<br /> => <pre>".print_r($result,true)."</pre>";
+			return count($result);
 		} // end of member function getUniqueViews
 
-
-
-
-
-} // end of mod
+		public function getClassName() {
+			return get_called_class();
+		} // end of mod
+}
 ?>

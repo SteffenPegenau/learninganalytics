@@ -35,7 +35,7 @@ require_once 'mod.php';
  * class mod_workshop
  * 
  */
-class mod_workshop extends mod
+class mod_url extends mod
 {
 
 		/** Aggregations: */

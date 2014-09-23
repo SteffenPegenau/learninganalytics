@@ -36,7 +36,7 @@ require_once 'mod.php';
  * class mod_feedback
  * 
  */
-class mod_feedback
+class mod_feedback extends mod
 {
 
 		/** Aggregations: */
