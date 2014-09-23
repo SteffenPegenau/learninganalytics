@@ -12,21 +12,17 @@ global $CFG;
 
 $app = new \Slim\Slim ();
 $app->map ( '/getRoleInCourse/:id', 'getRoleInCourse' )->via ( 'GET');
-$app->map ( '/echoRole/:id', 'echoRole' )->via ( 'GET' );
 $app->map ( '/latestCourseViews/:id', 'latestCourseViews' )->via ( 'GET', 'POST' );
 $app->map ( '/latestAssignmentViews/:id', 'latestAssignmentViews' )->via ( 'GET', 'POST');
 $app->map ( '/latestForumPosts/:id', 'latestForumPosts' )->via ( 'GET', 'POST' );
 $app->run ();
 
 
-function echoRole($courseID) {
-	$context = context_course::instance($courseID);
-	$testTeacher = has_capability('mod/learninganalytics:teacherView', $context);
-	$testStudent = has_capability('mod/learninganalytics:studentView', $context);
-	echo "<pre>".print_r($testTeacher , true)."</pre>";
-	echo "<pre>".print_r($testStudent , true)."</pre>";
-}
-
+/**
+ * Returns either "student" or "teacher"
+ * @param int courseID The moodle CourseID
+ * @return string role "student" or "teacher"
+ */
 function getRoleInCourse($courseID) {
 	$role = "";
 	if(has_capability('mod/learninganalytics:studentview', context_course::instance($courseID))) {
