@@ -1,71 +1,49 @@
-//google.load('visualization', '1.1', {'packages': ['corechart']});
-//google.setOnLoadCallback(DrawChart());
 
+function transposeDataTable(dataTable) {
+            //step 1: let us get what the columns would be
+            var rows = [];//the row tip becomes the column header and the rest become
+            for (var rowIdx=0; rowIdx < dataTable.getNumberOfRows(); rowIdx++) {
+                var rowData = [];
+                for( var colIdx = 0; colIdx < dataTable.getNumberOfColumns(); colIdx++) {
+                    rowData.push(dataTable.getValue(rowIdx, colIdx));
+                }
+                rows.push( rowData);
+            }
+            var newTB = new google.visualization.DataTable();
+            newTB.addColumn('string', dataTable.getColumnLabel(0));
+            newTB.addRows(dataTable.getNumberOfColumns()-1);
+            var colIdx = 1;
+            for(var idx=0; idx < (dataTable.getNumberOfColumns() -1);idx++) {
+                var colLabel = dataTable.getColumnLabel(colIdx);
+                newTB.setValue(idx, 0, colLabel);
+                colIdx++;
+            }
+            for (var i=0; i< rows.length; i++) {
+                var rowData = rows[i];
+                //console.log(rowData[0]);
+                newTB.addColumn('number',rowData[0]); //assuming the first one is always a header
+                var localRowIdx = 0;
 
-/**
- * 
- */
-function DrawChart(div) {
+                for(var j=1; j< rowData.length; j++) {
+                    newTB.setValue(localRowIdx, (i+1), rowData[j]);
+                    localRowIdx++;
+                }
+            }
+            return newTB;
+      }
+
+function DrawGUI(div, course) {
+	var loader = "<img src='/mod/learninganalytics/pix/loader.gif' style='display: block; margin-left: auto; margin-right: auto;'></src>";
+	$( "#"+div ).html(loader);
 	$.ajax({
-		url: "/mod/learninganalytics/rest/rest.php/latestCourseViews/5",
-		dataType: 'json',
-		context : document.body
-	}).done(function (result) {
-		console.log(result);
-		console.log(result[8]);
-		
-		//------------------------------------------------------------------//
-		// Create and populate the data table.
-		//------------------------------------------------------------------//
-       	var subarray = new Array('x days ago', 'Unique student course views', 'Number of Students that have not viewed the course that day');
-		var array = new Array(subarray);
-		
-		for (var i = 0; i < result.length-1; i++) {
-			var subarray1 = new Array();
-			//var subarray3 = new Array();
-			subarray1.push(i + 1, result[i], result[result.length-1] - result[i]);
-			array.push(subarray1);
-		};
-		//console.log(subarray1);
-		//console.log(subarray2);
-		console.log(subarray);
-		console.log(array);
-		
-    	var data = google.visualization.arrayToDataTable(array);
-    	
-    	
-    	//------------------------------------------------------------------//
-		// Create a ColumnChart.
-		//------------------------------------------------------------------//
-    	var chart = new google.visualization.ColumnChart(document.getElementById(div));
-    	
-    	
-    	//------------------------------------------------------------------//
-		// Setting the options for the column chart.
-		//------------------------------------------------------------------//
-    	var options = {
-			width: 600,
-			height: 400,
-			legend: { position: 'top', maxLines: 3 },
-			bar: { groupWidth: '75%' },
-			isStacked: true,
-			hAxis: {
-				title: 'number of days ago',
-				gridlines: {
-					count: 8,
-				},
-				format: '#',
-			},
-    	};
-    	
-    	
-    	//------------------------------------------------------------------//
-		// Draw the chart.
-		//------------------------------------------------------------------//
-    	chart.draw(data, options);
+		url: "/mod/learninganalytics/rest/rest.php/uniqueViews/" + course,
+		type: 'GET',
+        dataType: 'json',
+	}).done(function (data) {
+		//var grid = "<div class='row'><div class='col-md-6' id='left'></div><div class='col-md-6' id='right'></div></div>";
+		var grid = "<div id='left'></div><div id='right'></div>";
+		$('#'+div).html(grid);
+		drawTable('left', data);
+		drawStackedColumnChart('right', data);
 	});
-}
-
-function DrawGUI(div) {
-	DrawChart(div);
 }

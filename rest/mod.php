@@ -40,13 +40,16 @@ require_once '../../../config.php';
  */
 class mod
 {
-
+		public $locatedPluginName;
 		/** Aggregations: */
 
 		/** Compositions: */
 
 		 /*** Attributes: ***/
-
+		public function __construct() {
+			$this->locatedPluginName = $this->getLocatedName();
+			//echo $this->locatedPluginName;
+		}
 
 		/**
 		 * 
@@ -56,7 +59,7 @@ class mod
 		 * @param long endDate 
 		 * @return int
 		 * @access public
-		 */
+		 */		 
 		public function getUniqueViews( $course,  $startDate,  $endDate ) {
 			GLOBAL $DB;
 			$sql = "SELECT
@@ -80,5 +83,11 @@ class mod
 		public function getClassName() {
 			return get_called_class();
 		} // end of mod
+		
+		private function getLocatedName() {
+			$mod = str_replace('mod_', '', get_called_class());
+			$PluginName = get_string('pluginname', $mod);
+			return $PluginName;
+		}
 }
 ?>

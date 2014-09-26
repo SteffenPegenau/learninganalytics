@@ -57,14 +57,15 @@ function get_learninganalytics_name($learninganalytics) {
  * @return bool|int
  */
 function learninganalytics_add_instance($learninganalytics) {
-    global $DB, $CFG;
+    global $DB, $CFG, $COURSE;
 	$data = new stdClass();
 	
 	$data->course = $learninganalytics->course;
 	$data->name = "LearningAnalytics";
 	
-	$filename = $CFG->dirroot . "/mod/learninganalytics/html/JSLoader.html"; 
-	$data->intro = file_get_contents($filename);
+	$filename = $CFG->dirroot . "/mod/learninganalytics/html/JSLoader.html";
+	$content =  file_get_contents($filename);
+	$data->intro = str_replace('COURSE', $COURSE->id, $content);
 	$data->introformat = 0;
 	$data->timemodified = time();
 	//echo "<pre>".print_r($CFG, true)."</pre>";
