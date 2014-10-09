@@ -39,12 +39,11 @@ require_once '../../../config.php';
 class observer {
 	public $course;
 	public $modulesInCourse = array();
+
 	private $dateformat = "d.m."; //Y H:i:s";
 
 	/**
 	 * __construct
-	 * -Pr�ft welche Module in Kurs sind
-	 * -Legt f�r jeden Modul-Typ ein Objekt an und verwaltet die Objekte in Array
 	 *
 	 * @param int course
 	 * @return void
@@ -70,6 +69,7 @@ class observer {
 		$data = array();
 		$header = array();
 		$dateCounter = $this -> startDate;
+
 		$header[] = "Name";
 		while ($dateCounter <= $this -> endDate) {
 			$printableDate = date($this -> dateformat, $dateCounter);
@@ -77,6 +77,7 @@ class observer {
 			foreach ($this->modulesInCourse as $index => $module) {
 				$count = $module -> getUniqueViews($this -> course, $dateCounter, $dateCounter + 24 * 60 * 60 - 1);
 				$data[$module -> locatedPluginName][] = $count;
+
 			}
 			$dateCounter += 24 * 60 * 60;
 			// Plus one day

@@ -107,7 +107,7 @@ class mod
                     
                     if(empty($result)) {
                         return 0;
-                    }
+}
                     else {
                         return (int)$result->count;
                     }

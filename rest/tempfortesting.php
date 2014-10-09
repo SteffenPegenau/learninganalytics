@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 require_once '../../../config.php';
 
@@ -18,3 +19,21 @@ function echoData($data) {
 
 
 ?>
+=======
+<?php
+
+require_once '../../../config.php';
+$timestamp = strtotime("11-12-10");
+$format = "d.m.Y H:i:s";
+
+$date = date($format, $timestamp);
+echoData($date);
+
+function echoData($data) {
+	echo "<pre>".print_r($data, true)."</pre>";
+}
+
+
+
+?>
+>>>>>>> ceb8c11f23d59d0c85037521adb5a0dab9d84fc8

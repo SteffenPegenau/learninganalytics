@@ -1,4 +1,5 @@
 
+
 function transposeDataTable(dataTable) {
     //step 1: let us get what the columns would be
     var rows = [];//the row tip becomes the column header and the rest become
