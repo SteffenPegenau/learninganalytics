@@ -55,9 +55,9 @@ class observer {
 		$this->endDate = strtotime(date('d-m-Y')) + 24 * 60 * 60 - 1;
 		GLOBAL $DB;
 		$this -> course = $course;
-		$SQL = "SELECT component FROM {logstore_standard_log} WHERE component LIKE 'mod%' AND timecreated >= " . $this -> startDate . " AND timecreated <= " . $this -> endDate . " GROUP BY component";
+		$SQL = "SELECT component FROM {logstore_standard_log} WHERE action = 'viewed' AND courseid=".$course." AND component LIKE 'mod%' AND timecreated >= " . $this -> startDate . " AND timecreated <= " . $this -> endDate . " GROUP BY component";
 		$modules = $DB -> get_records_sql($SQL);
-		//echo "<pre>".print_r($result, true)."</pre>";
+		//echo "<pre>".print_r($SQL, true)."</pre>";
 		foreach ($modules as $module => $value) {
 			require_once $module . '.php';
 			$this -> modulesInCourse[$module] = new $module();
