@@ -100,3 +100,4 @@ class mod_choice extends mod
     }
 } // end of mod_choice
 
+?>

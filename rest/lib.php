@@ -38,5 +38,4 @@ function localizedNameToModName($localizedModName, $courseID) {
     echo "Unknown. Possible Names: <br /><pre>" . print_r($moduleNames, true) . "</pre>";
     die;
 }
-
 ?>
