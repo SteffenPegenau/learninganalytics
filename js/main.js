@@ -290,6 +290,58 @@ var assign = {
     }
 }
 
+var feedback = {
+    divGrid: {
+        Row1: {
+            col1: {
+                id: 'pieChart',
+                header: 'Kursbeteiligung',
+                size: 5,
+                REST: 'getParticipation'
+            },
+            col2: {
+                id: 'assignTable',
+                header: 'Bewertungen',
+                size: 7,
+                REST: 'getTableWithGrades'
+            }
+        },
+        Row2: {
+            col1: {
+                id: 'tableCompletedFeedback',
+                header: 'Nutzer, die Feedback gaben',
+                size: 6,
+                REST: 'getUsersWithCompletedFeedback'
+            },
+            col2: {
+                id: 'tableUncompletedFeedback',
+                header: 'Nutzer, die bisher kein Feedback gaben',
+                size: 6,
+                REST: 'getUsersWithoutCompletedFeedback'
+            }
+        }
+    },
+    drawDivGrid: function (divID) {
+        GUIcontroller.drawDivGrid(divID, feedback.divGrid);
+    }, 
+    columnChart: function (divID, res) {
+        GUIcontroller.drawColumnChart(divID, res);
+    },
+    pieChart: function (divID, res) {
+        GUIcontroller.drawPieChart(divID, res);
+    },
+    tableCompletedFeedback: function (divID, res) {
+        GUIcontroller.drawTable(divID, res);
+    },
+    tableUncompletedFeedback: function (divID, res) {
+        GUIcontroller.drawTable(divID, res);
+    },
+    draw: function (divID) {
+        this.drawDivGrid(divID);
+        GUIcontroller.fillDivGridWithContent(divID, feedback.divGrid, 'feedback');
+    }
+}
+
 var forum = {
     drawDivGrid: function (divID) {
         var unseen = '<div class="row"><div class="col-md-12" id="unseen_frame"></div></div>';
@@ -565,6 +617,17 @@ var GUIcontroller = {
             options = defaultOptions;
         }
         var chart = new google.visualization.PieChart(document.getElementById(divID));
+        chart.draw(data, options);
+    },
+    drawTable: function (divID, res, options) {
+        var data = new google.visualization.DataTable(res);
+        var defaultOptions = {
+            
+        };
+        if (!options) {
+            options = defaultOptions;
+        }
+        var chart = new google.visualization.Table(document.getElementById(divID));
         chart.draw(data, options);
     }
 };
